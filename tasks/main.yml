@@ -1,5 +1,38 @@
 ---
 # tasks file for Common
+- name: Create Onecloud automation directory
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - '/root/.onecloud_automate'
+
+- name: Upload Onecloud initialization script
+  become: yes
+  copy:
+    src: common_init.sh
+    dest: /root/.onecloud_automate/common_init.sh
+
+- name: Upload hosts file
+  become: yes
+  copy:
+    src: hosts
+    dest: /root/.onecloud_automate/hosts
+
+- name: Change permissions on common_init.sh
+  become: yes
+  file:
+    path: /root/.onecloud_automate/common_init.sh
+    mode: "u+rwx"
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Run Onecloud Initialization script
+  become: yes
+  command: /root/.onecloud_automate/common_init.sh
+  args:
+    executable: /bin/bash
+
 - name: Make sure we have a 'wheel' group
   become: yes
   group:
